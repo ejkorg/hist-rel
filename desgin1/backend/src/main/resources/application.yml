@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:oracle:thin:@//myyqsp-db.onsemi.com:1572/MYYQSP.onsemi.com}
+    username: ${DB_USER:DATAPORT_USER}
+    password: ${DB_PASSWORD:__REPLACE_FROM_SECRET__}
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8080
+
+app:
+  sender:
+    sender-id: ${SENDER_ID:22}
+    number-of-data-to-send: ${NUMBER_OF_DATA_TO_SEND:300}
+    count-limit-trigger: ${COUNT_LIMIT_TRIGGER:600}
+    list-file: ${LIST_FILE:/apps/exensio/historical/SBN/sbn_my1_ets88_ft_list.txt}
+    start-date: ${START_DATE:01-Jan-23 11.59.59.000000000 PM}
+    end-date: ${END_DATE:22-Apr-25 11.59.59.000000000 PM}
+    tester-type: ${TESTER_TYPE:EAGLE}
+    data-type: ${DATA_TYPE:FT}

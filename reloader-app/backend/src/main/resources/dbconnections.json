@@ -1,0 +1,29 @@
+{
+	"EXTERNAL":{
+	"host":"gyqsq-db.onsemi.com/GYQSQ.onsemi.com",
+        "user": "DATAPORT_USER",
+        "password":"dpusr^401",
+		"port": "1545"
+	},
+    
+	"OSPI":{
+        "host":"phyqsq-db.onsemi.com/PHYQSQ.onsemi.com",
+            "user": "DATAPORT_USER",
+            "password":"DPORTuser.2018",
+            "port": "1770"
+        },
+    "SBN":{
+        "host":"myyqsq-db.onsemi.com/MYYQSQ.onsemi.com",
+            "user": "DATAPORT_USER",
+            "password":"DPORTuser20",
+            "port": "1571"
+        },
+    "OSV":{
+        "host":"osvyqsq-db.onsemi.com/OSVYQSQ.onsemi.com",
+            "user": "DATAPORT_USER",
+            "password":"osvdtpusr6543",
+            "port": "1759"
+        }
+
+
+}

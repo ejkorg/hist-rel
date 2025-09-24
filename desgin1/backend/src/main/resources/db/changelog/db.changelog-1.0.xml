@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog 
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog 
+      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1-create-sender-queue" author="ejkorg">
+        <createTable tableName="sender_queue">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="payload_id" type="VARCHAR(1000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sender_id" type="INTEGER"/>
+            <column name="status" type="VARCHAR(50)"/>
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="processed_at" type="TIMESTAMP"/>
+            <column name="source" type="VARCHAR(200)"/>
+        </createTable>
+        <createIndex tableName="sender_queue" indexName="idx_sender_queue_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="sender_queue" indexName="idx_sender_queue_sender">
+            <column name="sender_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2-create-sender-config" author="ejkorg">
+        <createTable tableName="sender_config">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="sender_id" type="INTEGER"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="list_file" type="VARCHAR(1000)"/>
+            <column name="number_of_data_to_send" type="INTEGER"/>
+            <column name="count_limit_trigger" type="INTEGER"/>
+            <column name="start_date" type="VARCHAR(100)"/>
+            <column name="end_date" type="VARCHAR(100)"/>
+            <column name="tester_type" type="VARCHAR(100)"/>
+            <column name="data_type" type="VARCHAR(100)"/>
+            <column name="email_recipients" type="VARCHAR(1000)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

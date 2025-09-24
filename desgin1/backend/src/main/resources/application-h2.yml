@@ -1,0 +1,27 @@
+spring:
+  profiles: h2
+  datasource:
+    url: jdbc:h2:mem:histrel;DB_CLOSE_DELAY=-1;MODE=Oracle
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+# Enable dev-only H2 console
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+app:
+  sender:
+    sender-id: 22
+    number-of-data-to-send: 300
+    count-limit-trigger: 600
+    list-file: /tmp/sbn_list.txt

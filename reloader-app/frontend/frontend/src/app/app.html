@@ -1,0 +1,42 @@
+
+<mat-toolbar color="primary">Reloader</mat-toolbar>
+
+<div class="app-container">
+  <mat-card>
+    <form (ngSubmit)="runNow()">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Site</mat-label>
+        <mat-select [(ngModel)]="selectedSite" name="site" required>
+          <mat-option *ngFor="let s of sites" [value]="s">{{ s }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Sender ID</mat-label>
+        <input matInput type="number" [(ngModel)]="senderId" name="senderId" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>How many to push</mat-label>
+        <input matInput type="number" [(ngModel)]="numToSend" name="numToSend" />
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit">Run Now</button>
+      </div>
+    </form>
+  </mat-card>
+
+  <mat-card *ngIf="result" class="result-card">
+    <mat-card-title>Result</mat-card-title>
+    <mat-card-content>
+      <pre>{{ result }}</pre>
+    </mat-card-content>
+  </mat-card>
+</div>
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+

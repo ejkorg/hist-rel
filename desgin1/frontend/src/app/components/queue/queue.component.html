@@ -1,0 +1,39 @@
+<div class="queue-panel">
+  <h3>Sender Queue (sender id {{senderId}})</h3>
+
+  <div class="controls">
+    <label>Show status:
+      <select [(ngModel)]="status" (change)="refresh()">
+        <option value="NEW">NEW</option>
+        <option value="PROCESSING">PROCESSING</option>
+        <option value="SENT">SENT</option>
+        <option value="FAILED">FAILED</option>
+      </select>
+    </label>
+
+    <label>Limit:
+      <input type="number" [(ngModel)]="limit" />
+    </label>
+
+    <button (click)="refresh()">Refresh</button>
+    <button (click)="run()">Run Now</button>
+  </div>
+
+  <div class="enqueue-form">
+    <h4>Reload / Submit payloads</h4>
+    <p>Paste the payload identifiers (one per line) from your list file or INI here:</p>
+    <textarea rows="8" cols="80" [(ngModel)]="payloadText" placeholder="payload1\npayload2\n..."></textarea>
+    <div>
+      <button (click)="submitPayloads()">Submit (enqueue)</button>
+    </div>
+  </div>
+
+  <div class="queue-list">
+    <h4>Items ({{items?.length}})</h4>
+    <ul>
+      <li *ngFor="let item of items">
+        {{item.payloadId}} — {{item.status}} — created: {{item.createdAt | date:'short'}} — processed: {{item.processedAt ? (item.processedAt | date:'short') : '-'}}
+      </li>
+    </ul>
+  </div>
+</div>
