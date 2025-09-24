@@ -1,0 +1,8 @@
+{
+  "SAMPLE": {
+    "host": "mydb-host.example.com/DBSERVICE",
+    "user": "DB_USER",
+    "password": "REPLACE_WITH_SECRET",
+    "port": "1521"
+  }
+}

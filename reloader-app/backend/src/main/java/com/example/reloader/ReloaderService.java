@@ -20,6 +20,17 @@ public class ReloaderService {
 
     public ReloaderService() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+
+        // Allow specifying an external dbconnections.json path via RELOADER_DBCONN_PATH.
+        String externalPath = System.getenv("RELOADER_DBCONN_PATH");
+        if (externalPath != null && !externalPath.isBlank()) {
+            try (InputStream is = Files.newInputStream(Paths.get(externalPath))) {
+                dbConnections = mapper.readValue(is, Map.class);
+                return;
+            }
+        }
+
+        // Fallback to classpath resource for local/dev use.
         ClassPathResource resource = new ClassPathResource("dbconnections.json");
         dbConnections = mapper.readValue(resource.getInputStream(), Map.class);
     }

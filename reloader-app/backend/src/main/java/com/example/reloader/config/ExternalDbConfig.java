@@ -6,6 +6,9 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,6 +21,17 @@ public class ExternalDbConfig {
 
     public ExternalDbConfig() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+
+        // Prefer an external file path via env var RELOADER_DBCONN_PATH for secrets in deployments.
+        String externalPath = System.getenv("RELOADER_DBCONN_PATH");
+        if (externalPath != null && !externalPath.isBlank()) {
+            try (InputStream is = Files.newInputStream(Paths.get(externalPath))) {
+                dbConnections = mapper.readValue(is, new TypeReference<>() {});
+                return;
+            }
+        }
+
+        // Fallback to classpath resource (for local dev only). Avoid packaging real secrets into JAR.
         ClassPathResource r = new ClassPathResource("dbconnections.json");
         dbConnections = mapper.readValue(r.getInputStream(), new TypeReference<>() {});
     }

@@ -10,3 +10,7 @@ node_modules/
 /.mvn/
 .classpath
 .project
+
+# Do not commit db connection secrets
+dbconnections.json
+**/dbconnections.json
