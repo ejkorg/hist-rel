@@ -1,0 +1,12 @@
+# Top-level ignore
+/target/
+**/target/
+/.idea/
+.vscode/
+node_modules/
+**/node_modules/
+.DS_Store
+.env
+/.mvn/
+.classpath
+.project
