@@ -1,7 +1,7 @@
 [DB_PARAM]
 host = myyqsp-db.onsemi.com
 user = DATAPORT_USER
-password = DPuser20
+password = REPLACE_WITH_SECRET
 port = 1572
 service_name = MYYQSP.onsemi.com
 sid = MYYQSP
@@ -29,5 +29,3 @@ log_file= /apps/exensio/historical/SBN/sbn_my1_ets88_ft_send.log
 recepients = jovenkarlo.sorallo@onsemi.com
 subject = CE-CE-2763
 jira = https://jira.onsemi.com/browse/CE-2806
-
-

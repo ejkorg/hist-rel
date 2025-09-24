@@ -59,7 +59,7 @@ class db_config:
 app = Flask(__name__)
 
 
-app.secret_key="s1qmyNJfPU3Ieu52U7CaOgzIY0tQM1lj"
+app.secret_key = os.getenv("RELOADER_FLASK_SECRET", "replace-me-with-secure-random-secret")
 
 
 
