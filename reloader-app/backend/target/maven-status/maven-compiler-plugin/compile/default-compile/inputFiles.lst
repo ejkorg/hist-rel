@@ -1,9 +1,0 @@
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/service/SenderService.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/ReloaderService.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/ReloaderController.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/entity/SenderQueueEntry.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/web/SenderController.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/config/ExternalDbConfig.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/ReloaderApplication.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/web/dto/EnqueueRequest.java
-/workspaces/hist-rel/reloader-app/backend/src/main/java/com/example/reloader/repository/SenderQueueRepository.java
