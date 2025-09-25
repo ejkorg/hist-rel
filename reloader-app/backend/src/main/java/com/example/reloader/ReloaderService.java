@@ -32,7 +32,12 @@ public class ReloaderService {
 
         // Fallback to classpath resource for local/dev use.
         ClassPathResource resource = new ClassPathResource("dbconnections.json");
-        dbConnections = mapper.readValue(resource.getInputStream(), Map.class);
+        if (resource.exists()) {
+            dbConnections = mapper.readValue(resource.getInputStream(), Map.class);
+        } else {
+            // If no classpath resource and no external path provided, use empty map to avoid startup failure.
+            dbConnections = new HashMap<>();
+        }
     }
 
     public List<String> getSites() {
