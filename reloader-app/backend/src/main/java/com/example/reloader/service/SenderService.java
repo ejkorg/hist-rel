@@ -76,17 +76,51 @@ public class SenderService {
 
     @Transactional
     public int enqueuePayloads(Integer senderId, java.util.List<String> payloadIds, String source) {
-        if (payloadIds == null || payloadIds.isEmpty()) return 0;
-        int count = 0;
+        EnqueueResultHolder res = enqueuePayloadsWithResult(senderId, payloadIds, source);
+        return res.enqueuedCount;
+    }
+
+    @Transactional
+    public EnqueueResultHolder enqueuePayloadsWithResult(Integer senderId, java.util.List<String> payloadIds, String source) {
+        if (payloadIds == null || payloadIds.isEmpty()) return new EnqueueResultHolder(0, java.util.Collections.emptyList());
+
+        // normalize and trim input payloads
+        java.util.List<String> normalized = new java.util.ArrayList<>();
         for (String p : payloadIds) {
-            if (p == null || p.trim().isEmpty()) continue;
-            SenderQueueEntry entry = new SenderQueueEntry(senderId, p.trim(), source);
-            entry.setStatus("NEW");
-            repository.save(entry);
-            count++;
+            if (p == null) continue;
+            String t = p.trim();
+            if (t.isEmpty()) continue;
+            normalized.add(t);
         }
-        log.info("Enqueued {} payloads (senderId={}, source={})", count, senderId, source);
-        return count;
+        if (normalized.isEmpty()) return new EnqueueResultHolder(0, java.util.Collections.emptyList());
+
+        // Query repository for payloads already present for this sender
+        java.util.List<String> existing = repository.findPayloadIdsBySenderIdAndPayloadIdIn(senderId, normalized);
+        java.util.Set<String> existingSet = new java.util.HashSet<>(existing == null ? java.util.Collections.emptyList() : existing);
+
+        java.util.List<String> toInsert = new java.util.ArrayList<>();
+        java.util.List<String> skipped = new java.util.ArrayList<>();
+        for (String p : normalized) {
+            if (existingSet.contains(p)) skipped.add(p);
+            else toInsert.add(p);
+        }
+
+        int inserted = 0;
+        for (String p : toInsert) {
+            SenderQueueEntry entry = new SenderQueueEntry(senderId, p, source);
+            entry.setStatus("NEW");
+            try {
+                repository.save(entry);
+                inserted++;
+            } catch (org.springframework.dao.DataIntegrityViolationException dive) {
+                // Unique constraint violation or other integrity issue means another process
+                // inserted the same payload concurrently. Treat as skipped.
+                log.warn("Skipping payload due to integrity violation (probably duplicate): {}", p);
+                skipped.add(p);
+            }
+        }
+        log.info("Enqueued {} payloads (senderId={}, source={}), skipped {} already-present", inserted, senderId, source, skipped.size());
+        return new EnqueueResultHolder(inserted, skipped);
     }
 
     // Example helper: when caller wants to push items directly into an external sender queue table on remote DB
@@ -116,5 +150,16 @@ public class SenderService {
 
     public java.util.List<SenderQueueEntry> getQueue(Integer senderId, String status, int limit) {
         return repository.findBySenderIdAndStatusOrderByCreatedAt(senderId, status, PageRequest.of(0, limit));
+    }
+
+    // Internal holder used to return both count and skipped items to callers.
+    public static class EnqueueResultHolder {
+        public final int enqueuedCount;
+        public final java.util.List<String> skippedPayloads;
+
+        public EnqueueResultHolder(int enqueuedCount, java.util.List<String> skippedPayloads) {
+            this.enqueuedCount = enqueuedCount;
+            this.skippedPayloads = skippedPayloads == null ? java.util.Collections.emptyList() : skippedPayloads;
+        }
     }
 }
