@@ -22,6 +22,9 @@ public class ExternalLocation {
     @Column(length = 2000)
     private String details;
 
+    @Column(length = 100)
+    private String site;
+
     // getters/setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -33,4 +36,6 @@ public class ExternalLocation {
     public void setDbConnectionName(String dbConnectionName) { this.dbConnectionName = dbConnectionName; }
     public String getDetails() { return details; }
     public void setDetails(String details) { this.details = details; }
+    public String getSite() { return site; }
+    public void setSite(String site) { this.site = site; }
 }

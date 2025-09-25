@@ -87,4 +87,16 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="5" author="copilot">
+        <addColumn tableName="external_location">
+            <column name="site" type="VARCHAR(100)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="6" author="copilot">
+        <comment>Backfill site column using first token of label (uppercase). Separate SQL for H2 and Oracle.</comment>
+        <sql dbms="h2">UPDATE external_location SET site = UPPER(CASE WHEN LOCATE(' ', label) &gt; 0 THEN SUBSTRING(label, 1, LOCATE(' ', label)-1) ELSE label END);</sql>
+        <sql dbms="oracle">UPDATE external_location SET site = UPPER(CASE WHEN INSTR(label, ' ') &gt; 0 THEN SUBSTR(label, 1, INSTR(label, ' ')-1) ELSE label END);</sql>
+    </changeSet>
+
 </databaseChangeLog>

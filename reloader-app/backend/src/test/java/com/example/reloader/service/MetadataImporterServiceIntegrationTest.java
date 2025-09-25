@@ -79,7 +79,7 @@ public class MetadataImporterServiceIntegrationTest {
             return new SenderService.EnqueueResultHolder(list.size(), java.util.Collections.emptyList());
         });
 
-        int added = importerService.discoverAndEnqueue("TEST_SITE", "qa", 42, "2025-01-01 00:00:00.000000", "2025-12-31 23:59:59.999999", "T1", "D1", null, null, false, 0, 1000);
+    int added = importerService.discoverAndEnqueue("TEST_SITE", "qa", 42, "2025-01-01 00:00:00.000000", "2025-12-31 23:59:59.999999", "T1", "D1", null, null, null, false, 0, 1000);
 
         assertThat(added).isEqualTo(2);
 

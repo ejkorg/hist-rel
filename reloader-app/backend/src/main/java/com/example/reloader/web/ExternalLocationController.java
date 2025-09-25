@@ -29,6 +29,7 @@ public class ExternalLocationController {
         return service.listLocationsForEnvironment(envName);
     }
 
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/import")
     public ResponseEntity<String> importCsv(@RequestParam("file") MultipartFile file) throws IOException {
         String expected = System.getenv("EXTERNAL_IMPORT_TOKEN");

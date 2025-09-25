@@ -64,6 +64,15 @@ public class ExternalLocationService {
                     loc.setLabel(label);
                     loc.setDbConnectionName(dbConn);
                     loc.setDetails(details);
+                    // Derive site: first token of label (split on space), uppercase
+                    String siteVal = label;
+                    if (siteVal != null && !siteVal.isBlank()) {
+                        String[] tokens = siteVal.trim().split("\\s+", 2);
+                        siteVal = tokens[0].toUpperCase();
+                    } else {
+                        siteVal = null;
+                    }
+                    loc.setSite(siteVal);
                     locRepo.save(loc);
                 }
             }

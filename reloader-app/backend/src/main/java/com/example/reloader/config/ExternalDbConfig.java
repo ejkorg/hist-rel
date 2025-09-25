@@ -55,6 +55,50 @@ public class ExternalDbConfig {
     }
 
     /**
+     * Return the raw configuration map by key (the key used in dbconnections.json).
+     */
+    public Map<String, String> getConfigByKey(String key) {
+        return dbConnections.get(key);
+    }
+
+    /**
+     * Resolve a JDBC Connection by a connection key (db_connection_name) and optional environment.
+     * This is useful when locations store a lookup key instead of full connection details.
+     */
+    public Connection getConnectionByKey(String key, String environment) throws SQLException {
+        // DEV: support in-memory H2 external DB for offline testing. If set, return H2 connection seeded from classpath SQL.
+        String useH2 = System.getenv("RELOADER_USE_H2_EXTERNAL");
+        if (useH2 != null && (useH2.equalsIgnoreCase("true") || useH2.equalsIgnoreCase("1"))) {
+            String h2url = "jdbc:h2:mem:external_repo;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:external_h2_seed.sql'";
+            return DriverManager.getConnection(h2url, "sa", "");
+        }
+        if (key == null) throw new SQLException("null connection key");
+        // Try key with environment qualifiers first
+        Map<String, String> cfg = getConfigForSite(key, environment);
+        if (cfg == null) cfg = dbConnections.get(key);
+        if (cfg == null) throw new SQLException("No DB configuration for key " + key);
+
+        String host = cfg.get("host");
+        String user = cfg.get("user");
+        String pw = cfg.get("password");
+        String port = cfg.getOrDefault("port", "1521");
+
+        String jdbcUrl;
+        if (host != null && host.contains("/")) {
+            String[] parts = host.split("/");
+            String hostname = parts[0];
+            String service = parts[1];
+            String sid = service.split("\\.")[0];
+            jdbcUrl = String.format("jdbc:oracle:thin:@%s:%s:%s", hostname, port, sid);
+        } else {
+            if (host != null && host.startsWith("jdbc:")) jdbcUrl = host;
+            else jdbcUrl = String.format("jdbc:oracle:thin:@%s:%s", host, port);
+        }
+
+        return DriverManager.getConnection(jdbcUrl, user, pw);
+    }
+
+    /**
      * Returns a JDBC Connection for the configured site. This method attempts to be
      * DB-agnostic. For the common Oracle "host/sid" style host we build a thin URL.
      */
@@ -63,6 +107,12 @@ public class ExternalDbConfig {
     }
 
     public Connection getConnection(String site, String environment) throws SQLException {
+        // DEV: support in-memory H2 external DB for offline testing
+        String useH2 = System.getenv("RELOADER_USE_H2_EXTERNAL");
+        if (useH2 != null && (useH2.equalsIgnoreCase("true") || useH2.equalsIgnoreCase("1"))) {
+            String h2url = "jdbc:h2:mem:external_repo;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:external_h2_seed.sql'";
+            return DriverManager.getConnection(h2url, "sa", "");
+        }
         Map<String, String> cfg = getConfigForSite(site, environment);
         if (cfg == null) throw new SQLException("No DB configuration for site " + site);
 

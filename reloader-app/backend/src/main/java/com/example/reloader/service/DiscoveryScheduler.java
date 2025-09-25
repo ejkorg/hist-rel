@@ -21,7 +21,7 @@ public class DiscoveryScheduler {
     public void scheduledDiscovery() {
         try {
             log.info("Running scheduled discovery (site={}, senderId={})", props.getSite(), props.getSenderId());
-            importer.discoverAndEnqueue(props.getSite(), props.getEnvironment(), props.getSenderId(), props.getStartDate(), props.getEndDate(), props.getTesterType(), props.getDataType(), props.getTestPhase(), props.getLocation(), props.isWriteListFile(), props.getNumberOfDataToSend(), props.getCountLimitTrigger());
+            importer.discoverAndEnqueue(props.getSite(), props.getEnvironment(), props.getSenderId(), props.getStartDate(), props.getEndDate(), props.getTesterType(), props.getDataType(), props.getTestPhase(), props.getLocation(), null, props.isWriteListFile(), props.getNumberOfDataToSend(), props.getCountLimitTrigger());
         } catch (Exception ex) {
             log.error("Scheduled discovery failed: {}", ex.getMessage(), ex);
         }
