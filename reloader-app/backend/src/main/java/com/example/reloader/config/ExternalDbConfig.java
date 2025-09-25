@@ -41,11 +41,29 @@ public class ExternalDbConfig {
     }
 
     /**
+     * Try resolving db config with environment qualifiers. Order: site-environment, site_environment, site.environment, site
+     */
+    public Map<String, String> getConfigForSite(String site, String environment) {
+        if (environment != null && !environment.isBlank()) {
+            String[] candidates = new String[]{String.format("%s-%s", site, environment), String.format("%s_%s", site, environment), String.format("%s.%s", site, environment), site};
+            for (String k : candidates) {
+                Map<String, String> cfg = dbConnections.get(k);
+                if (cfg != null) return cfg;
+            }
+        }
+        return dbConnections.get(site);
+    }
+
+    /**
      * Returns a JDBC Connection for the configured site. This method attempts to be
      * DB-agnostic. For the common Oracle "host/sid" style host we build a thin URL.
      */
     public Connection getConnection(String site) throws SQLException {
-        Map<String, String> cfg = getConfigForSite(site);
+        return getConnection(site, null);
+    }
+
+    public Connection getConnection(String site, String environment) throws SQLException {
+        Map<String, String> cfg = getConfigForSite(site, environment);
         if (cfg == null) throw new SQLException("No DB configuration for site " + site);
 
         String host = cfg.get("host");

@@ -16,4 +16,7 @@ public interface SenderQueueRepository extends JpaRepository<SenderQueueEntry, L
 
     @Query("select s from SenderQueueEntry s where s.senderId = :senderId and s.status = :status order by s.createdAt asc")
     List<SenderQueueEntry> findBySenderIdAndStatusOrderByCreatedAt(@Param("senderId") Integer senderId, @Param("status") String status, Pageable p);
+
+    @Query("select s.payloadId from SenderQueueEntry s where s.senderId = :senderId and s.payloadId in :payloads")
+    List<String> findPayloadIdsBySenderIdAndPayloadIdIn(@Param("senderId") Integer senderId, @Param("payloads") List<String> payloads);
 }

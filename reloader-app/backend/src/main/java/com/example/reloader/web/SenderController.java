@@ -14,10 +14,12 @@ import java.util.List;
 public class SenderController {
     private final SenderService senderService;
     private final SenderQueueRepository repo;
+    private final com.example.reloader.service.MetadataImporterService metadataImporterService;
 
-    public SenderController(SenderService senderService, SenderQueueRepository repo) {
+    public SenderController(SenderService senderService, SenderQueueRepository repo, com.example.reloader.service.MetadataImporterService metadataImporterService) {
         this.senderService = senderService;
         this.repo = repo;
+        this.metadataImporterService = metadataImporterService;
     }
 
     @GetMapping("/{id}/queue")
@@ -41,10 +43,28 @@ public class SenderController {
 
     // New endpoint: enqueue payloads from UI form (Reload / Submit)
     @PostMapping("/{id}/enqueue")
-    public ResponseEntity<String> enqueue(@PathVariable("id") Integer id, @RequestBody EnqueueRequest req) {
+    public ResponseEntity<com.example.reloader.web.dto.EnqueueResult> enqueue(@PathVariable("id") Integer id, @RequestBody EnqueueRequest req) {
         Integer senderId = id;
         if (req.getSenderId() != null) senderId = req.getSenderId();
-        int added = senderService.enqueuePayloads(senderId, req.getPayloadIds(), req.getSource() != null ? req.getSource() : "ui_submit");
-        return ResponseEntity.ok("Enqueued " + added + " payloads");
+        SenderService.EnqueueResultHolder holder = senderService.enqueuePayloadsWithResult(senderId, req.getPayloadIds(), req.getSource() != null ? req.getSource() : "ui_submit");
+        com.example.reloader.web.dto.EnqueueResult result = new com.example.reloader.web.dto.EnqueueResult(holder.enqueuedCount, holder.skippedPayloads);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/{id}/discover")
+    public ResponseEntity<String> discover(@PathVariable("id") Integer id,
+                                           @RequestParam(defaultValue = "default") String site,
+                                           @RequestParam(defaultValue = "qa") String environment,
+                                           @RequestParam(required = false) String startDate,
+                                           @RequestParam(required = false) String endDate,
+                                           @RequestParam(required = false) String testerType,
+                                           @RequestParam(required = false) String dataType,
+                                           @RequestParam(required = false) String testPhase,
+                                           @RequestParam(required = false) String location,
+                                           @RequestParam(defaultValue = "false") boolean writeListFile,
+                                           @RequestParam(defaultValue = "300") int numberOfDataToSend,
+                                           @RequestParam(defaultValue = "600") int countLimitTrigger) {
+        int added = metadataImporterService.discoverAndEnqueue(site, environment, id, startDate, endDate, testerType, dataType, testPhase, location, writeListFile, numberOfDataToSend, countLimitTrigger);
+        return ResponseEntity.ok("Discovered and enqueued " + added + " payloads");
     }
 }
