@@ -36,3 +36,4 @@ mvn-build.log
 ## Local mirrors / temp folders
 hist-rel-mirror.git/
 hist-rel-clean/
+reloader-app/backend/src/main/resources/dbconnections.json
