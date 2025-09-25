@@ -58,8 +58,8 @@ public class MetadataImporterServiceIntegrationTest {
             s.execute("INSERT INTO DTP_SENDER_QUEUE_ITEM (id, id_sender) VALUES ('Q1','42');");
         }
 
-        // Make ExternalDbConfig return our H2 connection for site "TEST_SITE"
-        when(externalDbConfig.getConnection("TEST_SITE")).thenReturn(extConn);
+    // Make ExternalDbConfig return a fresh H2 connection for site "TEST_SITE" and environment "qa"
+    when(externalDbConfig.getConnection("TEST_SITE", "qa")).thenAnswer(inv -> DriverManager.getConnection("jdbc:h2:mem:external;DB_CLOSE_DELAY=-1"));
 
         // Default discovery properties
         discoveryProperties.setNotifyRecipient(null);
@@ -73,17 +73,17 @@ public class MetadataImporterServiceIntegrationTest {
 
     @Test
     public void testDiscoverAndEnqueue() throws Exception {
-        // Mock senderService.enqueuePayloads to return the size passed
-        when(senderService.enqueuePayloads(anyInt(), any(List.class), any(String.class))).thenAnswer(inv -> {
+        // Mock senderService.enqueuePayloadsWithResult to return EnqueueResultHolder matching the passed list size
+        when(senderService.enqueuePayloadsWithResult(anyInt(), any(List.class), any(String.class))).thenAnswer(inv -> {
             List<?> list = inv.getArgument(1);
-            return list.size();
+            return new SenderService.EnqueueResultHolder(list.size(), java.util.Collections.emptyList());
         });
 
-        int added = importerService.discoverAndEnqueue("TEST_SITE", 42, "2025-01-01", "2025-12-31", "T1", "D1", false, 0, 1000);
+        int added = importerService.discoverAndEnqueue("TEST_SITE", "qa", 42, "2025-01-01 00:00:00.000000", "2025-12-31 23:59:59.999999", "T1", "D1", null, null, false, 0, 1000);
 
         assertThat(added).isEqualTo(2);
 
-        // Verify senderService.enqueuePayloads was called once
-        verify(senderService).enqueuePayloads(42, List.of("ID1,DATA1", "ID2,DATA2"), "metadata_discover");
+        // Verify senderService.enqueuePayloadsWithResult was called (fallback removed in tests)
+        verify(senderService).enqueuePayloadsWithResult(42, List.of("ID1,DATA1", "ID2,DATA2"), "metadata_discover");
     }
 }
