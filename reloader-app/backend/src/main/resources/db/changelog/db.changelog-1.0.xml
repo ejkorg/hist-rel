@@ -20,4 +20,37 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="3" author="copilot">
+        <addUniqueConstraint tableName="sender_queue" columnNames="sender_id, payload_id" constraintName="uk_sender_payload" />
+    </changeSet>
+
+    <changeSet id="2" author="copilot">
+        <createTable tableName="refresh_tokens">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="token" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="revoked" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_token_token">
+            <column name="token"/>
+        </createIndex>
+        <createIndex tableName="refresh_tokens" indexName="idx_refresh_token_username">
+            <column name="username"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
