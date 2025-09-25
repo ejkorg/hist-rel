@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface EnqueueResult {
+  enqueuedCount: number;
+  skippedPayloads: string[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class SenderService {
   private base = '/api/senders';
@@ -15,7 +20,7 @@ export class SenderService {
     return this.http.post(`${this.base}/${senderId}/run?limit=${limit}`, {});
   }
 
-  enqueue(senderId: number, payloads: string[], source: string = 'ui_submit'): Observable<any> {
-    return this.http.post(`${this.base}/${senderId}/enqueue`, { senderId, payloadIds: payloads, source });
+  enqueue(senderId: number, payloads: string[], source: string = 'ui_submit'): Observable<EnqueueResult> {
+    return this.http.post<EnqueueResult>(`${this.base}/${senderId}/enqueue`, { senderId, payloadIds: payloads, source });
   }
 }

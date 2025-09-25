@@ -47,4 +47,29 @@ public class SenderController {
         int added = senderService.enqueuePayloads(senderId, req.getPayloadIds(), req.getSource() != null ? req.getSource() : "ui_submit");
         return ResponseEntity.ok("Enqueued " + added + " payloads");
     }
+
+    // Discover metadata rows (runs the SQL discovery and enqueues results)
+    @PostMapping("/{id}/discover")
+    public ResponseEntity<String> discover(@PathVariable("id") Integer id,
+                                           @RequestParam(defaultValue = "false") boolean writeListFile) {
+        // lazy autowire to avoid changing constructor signature
+        MetadataService metadataService = null;
+        try {
+            metadataService = org.springframework.web.context.support.SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this)
+                    .getClass()
+                    .getDeclaredConstructor()
+                    .newInstance();
+        } catch (Exception ignored) {
+        }
+
+        // Instead call via application context lookup
+        try {
+            org.springframework.context.ApplicationContext ctx = org.springframework.web.context.ContextLoader.getCurrentWebApplicationContext();
+            MetadataService svc = ctx.getBean(MetadataService.class);
+            int added = svc.discoverAndEnqueue(id, writeListFile);
+            return ResponseEntity.ok("Discovered and enqueued " + added + " payloads");
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("Discovery failed: " + ex.getMessage());
+        }
+    }
 }

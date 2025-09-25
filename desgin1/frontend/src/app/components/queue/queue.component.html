@@ -36,4 +36,15 @@
       </li>
     </ul>
   </div>
+
+  <div *ngIf="lastEnqueuedCount !== null" class="enqueue-result">
+    <h4>Last submit result</h4>
+    <p>Enqueued: {{lastEnqueuedCount}}</p>
+    <div *ngIf="skippedPayloads && skippedPayloads.length">
+      <p>Skipped (already in queue):</p>
+      <ul>
+        <li *ngFor="let s of skippedPayloads">{{s}}</li>
+      </ul>
+    </div>
+  </div>
 </div>

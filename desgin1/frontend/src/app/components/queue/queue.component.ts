@@ -11,6 +11,9 @@ export class QueueComponent implements OnInit {
   payloadText = ''; // multiline textarea input
   status = 'NEW';
   limit = 100;
+  // UI fields to show enqueue results
+  lastEnqueuedCount: number | null = null;
+  skippedPayloads: string[] = [];
   constructor(private senderService: SenderService) {}
   ngOnInit() { this.refresh(); }
 
@@ -30,7 +33,14 @@ export class QueueComponent implements OnInit {
       return;
     }
     this.senderService.enqueue(this.senderId, payloads).subscribe((res:any) => {
-      alert(res);
+      // Expecting { enqueuedCount: number, skippedPayloads: string[] }
+      this.lastEnqueuedCount = res?.enqueuedCount ?? null;
+      this.skippedPayloads = res?.skippedPayloads ?? [];
+      const msgParts: string[] = [];
+      if (this.lastEnqueuedCount != null) msgParts.push(`${this.lastEnqueuedCount} enqueued`);
+      if (this.skippedPayloads && this.skippedPayloads.length) msgParts.push(`${this.skippedPayloads.length} skipped`);
+      // lightweight user feedback
+      alert(msgParts.length ? msgParts.join(', ') : 'Submit complete');
       this.payloadText = '';
       this.refresh();
     }, err => {
