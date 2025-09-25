@@ -14,3 +14,25 @@ node_modules/
 # Do not commit db connection secrets
 dbconnections.json
 **/dbconnections.json
+
+## Build outputs and frontend
+/reloader-app/backend/target/
+/reloader-app/frontend/dist/
+/reloader-app/frontend/bundle-stats.json
+
+## Logs and runtime artifacts
+*.log
+*.log.*
+
+## Misc local files
+*.zip
+*.tar.gz
+*.tgz
+*.pdf
+*.bak
+dtp-db-list.csv
+mvn-build.log
+
+## Local mirrors / temp folders
+hist-rel-mirror.git/
+hist-rel-clean/
