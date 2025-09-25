@@ -31,6 +31,17 @@ public class ExternalLocationController {
 
     @PostMapping("/import")
     public ResponseEntity<String> importCsv(@RequestParam("file") MultipartFile file) throws IOException {
+        String expected = System.getenv("EXTERNAL_IMPORT_TOKEN");
+        if (expected != null && !expected.isBlank()) {
+            String provided = null;
+            // check header
+            // The header will be extracted by Spring if declared, but we read from request attribute here instead for simplicity.
+            // Note: in production you may want to integrate with Spring Security instead.
+            provided = ((org.springframework.web.context.request.ServletRequestAttributes)org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("X-Admin-Token");
+            if (provided == null || !provided.equals(expected)) {
+                return ResponseEntity.status(403).body("forbidden");
+            }
+        }
         service.importCsv(file.getInputStream());
         return ResponseEntity.ok("imported");
     }
